@@ -4,9 +4,9 @@ const turnsDisplay = document.querySelector('h2#turns');
 const bombsLeftDisplay = document.querySelector('h2#bombs-left');
 
 const faces = {
-    happy: '( •_•)>⌐■-■',
+    happy: '( •_•)',
     sad: '(T_T)',
-    veryHappy: '(¬‿¬)'
+    veryHappy: '(¬‿¬)>⌐■-■'
 }
 
 const bombIcon = '💣';
