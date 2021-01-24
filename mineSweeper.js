@@ -211,18 +211,4 @@ const updateDisplay = () => {
 
 }
 
-
-
 updateDisplay();
-
-
-
-
-/*for maths
-c = 2*pi*r
-
-
-a = pi*r*r
-*/
-
-//vexiq
