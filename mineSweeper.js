@@ -1,7 +1,10 @@
 const grid = document.querySelector("#grid");
 const resetButton = document.querySelector('button#reset');
+const flagButton = document.querySelector('button#flag-mode');
 const turnsDisplay = document.querySelector('h2#turns');
 const bombsLeftDisplay = document.querySelector('h2#bombs-left');
+
+flagButton.disabled = true
 
 const faces = {
     happy: '( •_•)',
@@ -9,12 +12,17 @@ const faces = {
     veryHappy: '(¬‿¬)>⌐■-■'
 }
 
+
+
 const bombIcon = '💣';
 const destroyedIcon = '💥';
 const gridWidth = 32;
 const gridHeight = 16;
-const numMines = 38;
+let numMines = 40;
+const flagIcon = '🚩';
 
+
+let flagModeStatus = false;
 let mines = [];
 let cells = [];
 let seenCells = [];
@@ -23,6 +31,8 @@ let gameState = '';
 
 // setup reset buttion
 resetButton.onclick = () => {
+    flagModeStatus = false;
+    flagButton.disabled = true;
     turns = 0;
     gameState = '';
     mines = [];
@@ -44,6 +54,17 @@ resetButton.onclick = () => {
     updateDisplay();
 }
 
+// flags mode
+flagButton.onclick = () => {
+    flagModeStatus = !flagModeStatus;
+    flaglimet =- 1 
+    if(flaglimet === 0){
+        const flagend = true
+    }
+    updateDisplay();
+};
+
+//creates grid
 for (let i = 0; i < gridHeight; i++) {
     const row = document.createElement("div")
     row.className = "row"
@@ -53,10 +74,30 @@ for (let i = 0; i < gridHeight; i++) {
         rowCell.y = i;
         cells.push(rowCell)
         rowCell.className = "cell";
+        // on clisk  for squares
         rowCell.onmouseup = () => {
             if (gameState != '') {
                 return
             }
+            
+            if(flagModeStatus && !isSeen(j, i)){
+        
+                rowCell.innerHTML = flagIcon;
+                const removedMine = removeMine(j, i)
+                if(!removedMine){
+                    gameState = 'lose'
+                }
+ 
+                if (mines.length === 0){
+                    gameState = 'win'
+                    
+                }
+                updateDisplay();
+                return 
+
+            }
+            
+            flagButton.disabled = false
 
             let empty = true;
             if (mines.length === 0) {
@@ -73,7 +114,7 @@ for (let i = 0; i < gridHeight; i++) {
                 //win Check
                 if (gridWidth * gridHeight - numMines == seenCells.length) {
                     gameState = 'win';
-                }
+                } 
             } else {
                 gameState = 'lose'
                 showBombs()
@@ -161,6 +202,19 @@ const isEmpty = (x, y) => {
     }
     return true
 }
+const removeMine = (x, y) =>{
+    if(flaglimet === 0){
+        return false
+    } 
+    for (let m of mines) {
+        if (m.x === x && m.y === y) {
+            const mineIndex = mines.indexOf(m)
+            mines.splice(mineIndex, 1)
+            return true;
+        }            
+    }
+    return false
+}
 
 const createMines = (numMines) => {
     let mines = [];
@@ -190,11 +244,18 @@ const getCellElement = (x, y) => {
     }
 }
 
-const updateDisplay = () => {
-    turnsDisplay.innerHTML = turns.toString().padStart(3, '0');
-    bombsLeftDisplay.innerHTML = numMines.toString().padStart(3, '0')
 
+const updateDisplay = () => {
+    turnsDisplay.innerHTML = turns.toString().padStart(3, '0')
+    let minesDisplay;
+     if (mines.length > 0) {
+        minesDisplay = mines.length;
+     } else {
+        minesDisplay = numMines;
+     }
+     bombsLeftDisplay.innerHTML = minesDisplay.toString().padStart(3, '0')
     let faceString;
+    document.body.classList.remove('lose')
     switch (gameState) {
     case '':
         faceString = faces.happy;
@@ -204,11 +265,16 @@ const updateDisplay = () => {
         break;
     case 'lose':
         faceString = faces.sad;
+        document.body.classList.add('lose')
         break;
     }
-
     resetButton.innerHTML = faceString;
-
+    
+    if(flagModeStatus){
+        flagButton.innerHTML = "NORMAL-MODE"
+    }else{
+        flagButton.innerHTML = "FLAG-MODE"
+    }
 }
 
 updateDisplay();
